@@ -8,12 +8,14 @@ contract DeferredEquityPlan {
     bool active = true; // this employee is active at the start of the contract
 
     // @TODO: Set the total shares and annual distribution
-    // Your code here!
+    uint fakenow = now;
+    uint total_shares = 1000;
+    uint annual_distribution = 250;
 
-    uint start_time = now; // permanently store the time this contract was initialized
+    uint start_time = fakenow; // permanently store the time this contract was initialized
 
     // @TODO: Set the `unlock_time` to be 365 days from now
-    // Your code here!
+    uint unlock_time = fakenow + 365;
 
     uint public distributed_shares; // starts at 0
 
@@ -27,21 +29,17 @@ contract DeferredEquityPlan {
         require(active == true, "Contract not active.");
 
         // @TODO: Add "require" statements to enforce that:
-        // 1: `unlock_time` is less than or equal to `now`
+        require(unlock_time <= fakenow, "Time is not valid.");
         // 2: `distributed_shares` is less than the `total_shares`
-        // Your code here!
+        require(distributed_shares < total_shares, "All shares have previously been distributed.");
 
         // @TODO: Add 365 days to the `unlock_time`
-        // Your code here!
+        unlock_time = unlock_time + 365;
 
         // @TODO: Calculate the shares distributed by using the function (now - start_time) / 365 days * the annual distribution
         // Make sure to include the parenthesis around (now - start_time) to get accurate results!
-        // Your code here!
+        distributed_shares = ((fakenow - start_time)/365) * annual_distribution;
 
-        // double check in case the employee does not cash out until after 5+ years
-        if (distributed_shares > 1000) {
-            distributed_shares = 1000;
-        }
     }
 
     // human_resources and the employee can deactivate this contract at-will
@@ -53,5 +51,9 @@ contract DeferredEquityPlan {
     // Since we do not need to handle Ether in this contract, revert any Ether sent to the contract directly
     function() external payable {
         revert("Do not send Ether to this contract!");
+    }
+    
+    function fastforward() public {
+        fakenow += 100 days;
     }
 }
